@@ -1,0 +1,91 @@
+###########Reference construction 
+
+STAR \
+    --runMode genomeGenerate\
+    --runThreadN 10\
+    --genomeDir /Dir/ref \
+    --genomeFastaFiles /Dir/ref.fa \
+    --sjdbGTFfile /Dir/ref.gtf \
+    --sjdbOverhang 149
+
+######################################### fastp去接头
+module load subread
+fastp -i WT.fq.gz -o out.fq
+fastp -i WT.fq.gz -o out.fq
+
+
+fastp -i W18s.fq.gz -o W18sout.fq
+fastp -i W28s.fq.gz -o W28sout.fq
+
+fastp -i  W2xGFP_1.fq.gz -o W2xGFP_1sout.fq
+fastp -i  W2xGFP_2.fq.gz -o W2xGFP_2sout.fq
+fastp -i  W2xGFP_3.fq.gz -o W2xGFP_3sout.fq
+
+fastp -i  W4xGFP_1.fq.gz -o W4xGFP_1.fq.gzsout.fq
+fastp -i  W4xGFP_2.fq.gz -o W4xGFP_2.fq.gzsout.fq
+fastp -i  W4xGFP_3.fq.gz -o W4xGFP_3.fq.gzsout.fq
+fastp -i  WFBL1_1.fq.gz -o WFBL1_1sout.fq
+fastp -i  WFBL1_2.fq.gz -o WFBL1_2sout.fq
+fastp -i  WFBL1_3.fq.gz -o WFBL1_3sout.fq
+fastp -i  WFBL2_1.fq.gz -o  WFBL2_1sout.fq
+fastp -i  WFBL2_2.fq.gz -o  WFBL2_2sout.fq
+fastp -i  WFBL2_3.fq.gz -o  WFBL2_3sout.fq
+
+
+############bowtie2 比对
+bowtie2 -p 4 -x /storage/leikaiLab/liyucong/Project/cjj/bowtie2_ref18s28s/18s28sribosome -U /storage/leikaiLab/liyucong/Project/cjjfbl14/WFBL2_3sout.fq --very-fast -k 1 |samtools sort -O bam -o - >out.bam
+
+
+
+#########bedtools 计算覆盖度
+
+bedtools genomecov -ibam W18sAligned.sortedByCoord.out.bam -5 -bg > 5WT18send.bedGraph
+bedtools genomecov -ibam W18sAligned.sortedByCoord.out.bam -3 -bg > 3WT18send.bedGraph
+
+bedtools genomecov -ibam W18srepeatAligned.sortedByCoord.out.bam -5 -bg > 5WT18send.bedGraph
+bedtools genomecov -ibam W18srepeatAligned.sortedByCoord.out.bam -3 -bg > 3WT18send.bedGraph
+
+bedtools genomecov -ibam W2xGFP_1.bam -3 -bg > 3W2xGFP_1.bedGraph
+bedtools genomecov -ibam W2xGFP_1.bam -5 -bg > 5W2xGFP_1.bedGraph
+
+bedtools genomecov -ibam W2xGFP_2result.bam -3 -bg > 3W2xGFP_2.bedGraph
+bedtools genomecov -ibam W2xGFP_2result.bam -5 -bg > 5W2xGFP_2.bedGraph
+
+
+bedtools genomecov -ibam W2xGFP_3result.bam -3 -bg > 3W2xGFP_3.bedGraph
+bedtools genomecov -ibam W2xGFP_3result.bam -5 -bg > 5W2xGFP_3.bedGraph
+
+bedtools genomecov -ibam W4xGFP_1.bam -3 -bg > 3W4xGFP_1.bedGraph
+bedtools genomecov -ibam W4xGFP_1.bam -5 -bg > 5W4xGFP_1.bedGraph
+
+
+bedtools genomecov -ibam W4xGFP_2.bam -3 -bg > 3W4xGFP_2.bedGraph
+bedtools genomecov -ibam W4xGFP_2.bam -5 -bg > 5W4xGFP_2.bedGraph
+
+bedtools genomecov -ibam W4xGFP_3.bam -3 -bg > 3W4xGFP_3.bedGraph
+bedtools genomecov -ibam W4xGFP_3.bam -5 -bg > 5W4xGFP_3.bedGraph
+
+
+bedtools genomecov -ibam WFBL1_1.bam -3 -bg > 3WFBL1_1.bedGraph
+bedtools genomecov -ibam WFBL1_1.bam -5 -bg > 5WFBL1_1.bedGraph
+
+bedtools genomecov -ibam WFBL1_2.bam -3 -bg > 3WFBL1_2.bedGraph
+bedtools genomecov -ibam WFBL1_2.bam -5 -bg > 5WFBL1_2.bedGraph
+
+bedtools genomecov -ibam WFBL1_3.bam -3 -bg > 3WFBL1_3.bedGraph
+bedtools genomecov -ibam WFBL1_3.bam -5 -bg > 5WFBL1_3.bedGraph
+
+bedtools genomecov -ibam WFBL2_1.bam -3 -bg > 3WFBL2_1.bedGraph
+bedtools genomecov -ibam WFBL2_1.bam -5 -bg > 5WFBL2_1.bedGraph
+ 
+bedtools genomecov -ibam WFBL2_2.bam -3 -bg > 3WFBL2_2.bedGraph
+bedtools genomecov -ibam WFBL2_2.bam -5 -bg > 5WFBL2_2.bedGraph
+
+bedtools genomecov -ibam WFBL2_3.bam -3 -bg > 3WFBL2_3.bedGraph
+bedtools genomecov -ibam WFBL2_3.bam -5 -bg > 5WFBL2_3.bedGraph
+
+bedtools genomecov -ibam 28s.bam -3 -bg > 328s.bedGraph
+bedtools genomecov -ibam 28s.bam -5 -bg > 528s.bedGraph
+
+bedtools genomecov -ibam 18s.bam -3 -bg > 318s.bedGraph
+bedtools genomecov -ibam 18s.bam -5 -bg > 518s.bedGraph
